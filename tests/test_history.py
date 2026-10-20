@@ -119,6 +119,8 @@ class HistoryTests(unittest.TestCase):
         with patch("history.Path.open", side_effect=PermissionError("Permission denied")):
             with self.assertRaisesRegex(HistoryError, "Cannot read history.*Permission denied"):
                 read_history(self.path)
+        with patch("history.tempfile.NamedTemporaryFile",
+                   side_effect=PermissionError("Permission denied")):
             with self.assertRaisesRegex(HistoryError, "Cannot write history.*Permission denied"):
                 append_history(self.path, "add", 1, 2, 3)
 
