@@ -28,7 +28,31 @@ python calculator.py divide 8 2
 python calculator.py --help
 ```
 
-## الاختبارات
+## سجل العمليات الاختياري
+
+لتسجيل عملية ناجحة في ملف JSON Lines تحدده بنفسك:
+
+```bash
+python calculator.py add 8 2 --history-file /tmp/calculator-history.jsonl
+python calculator.py divide 8 2 --history-file /tmp/calculator-history.jsonl
+python calculator.py history --history-file /tmp/calculator-history.jsonl
+```
+
+يمكن وضع `--history-file PATH` قبل اسم العملية أيضًا. يتطلب الأمر `history`
+هذا الخيار، ولا يقبل أعدادًا. يعرض سجلًا بصيغة JSON لكل سطر، بترتيب الإضافة.
+يحتوي كل سجل على `operation` و`a` و`b` و`result` و`timestamp` بتوقيت UTC
+وبصيغة ISO 8601. يبقى عرض نتيجة الحساب كما كان.
+
+دون الخيار لا تُحفظ بيانات ولا يُنشأ ملف سجل. تُسجّل العمليات الناجحة فقط،
+ويُنشأ الملف عند أول تسجيل، ويجب أن يكون المجلد الأب موجودًا.
+الملف الفارغ يُعرض دون مخرجات، والملف المفقود أو التالف ينتج رسالة خطأ.
+تُرفض القيم غير المحدودة وNaN عند التسجيل لضمان JSON صالح.
+تظهر أخطاء القراءة والكتابة بوضوح دون traceback، برمز خروج `2`؛
+إذا فشل الحفظ لا تُطبع نتيجة نجاح. لا يصلح البرنامج السجلات التالفة تلقائيًا،
+ولا يدعم الكتابة المتزامنة من عدة عمليات. احفظ سجلك خارج المستودع
+كما في المثال لتجنب إضافته إلى Git بالخطأ.
+
+## تشغيل الاختبارات
 
 ```bash
 python -m unittest discover -v
@@ -40,6 +64,8 @@ python -m unittest discover -v
 ## الملفات
 
 - `calculator.py`: دوال العمليات وواجهة سطر الأوامر.
+- `history.py`: قراءة سجل JSON Lines والتحقق منه والإضافة إليه.
 - `tests/__init__.py`: يتيح اكتشاف الاختبارات.
 - `tests/test_calculator.py`: اختبارات آلية باستخدام `unittest`.
+- `tests/test_history.py`: اختبارات السجل وواجهة الأوامر باستخدام ملفات مؤقتة.
 - `.gitignore`: تجاهل ملفات Python المؤقتة.
